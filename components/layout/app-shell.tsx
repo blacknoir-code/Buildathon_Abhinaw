@@ -5,6 +5,7 @@ import { usePathname } from "next/navigation";
 import { Sidebar } from "@/components/layout/sidebar";
 import { Topbar } from "@/components/layout/topbar";
 import { Copilot } from "@/components/copilot/copilot";
+import { CommandPalette } from "@/components/command-palette";
 import { NAV } from "@/lib/nav";
 
 function titleFor(pathname: string): string {
@@ -33,6 +34,7 @@ export function AppShell({ children }: { children: React.ReactNode }) {
         </main>
       </div>
       <Copilot open={copilotOpen} onClose={() => setCopilotOpen(false)} />
+      <CommandPalette />
     </div>
   );
 }

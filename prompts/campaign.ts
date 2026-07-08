@@ -26,6 +26,35 @@ Respond with ONLY a valid JSON object (no markdown fences, no prose) matching th
   "nextSteps": string[]
 }`;
 
+/** The plan sections that can be regenerated independently. */
+export const SECTION_SHAPES: Record<string, string> = {
+  objectives: `string[]  // 3-5 sharp, measurable objectives`,
+  personas: `[{ "name": string, "age": string, "motivation": string, "channels": string[], "objection": string }]`,
+  channels: `[{ "channel": string, "strategy": string }]`,
+  budgetSplit: `[{ "channel": string, "amount": number, "percent": number, "rationale": string }]  // amounts MUST sum to the total budget`,
+  timeline: `[{ "phase": string, "window": string, "focus": string, "status": "upcoming" | "active" | "done" }]`,
+  kpis: `[{ "metric": string, "target": string, "why": string }]`,
+  risks: `[{ "risk": string, "severity": "low" | "medium" | "high", "mitigation": string }]`,
+  nextSteps: `string[]  // ordered, actionable`,
+};
+
+export function buildSectionUserMessage(
+  section: string,
+  ctx: { title: string; summary: string; city: string; budget: number; goal: string; audience: string },
+): string {
+  return `Regenerate ONLY the "${section}" section of this campaign — a fresh, different take that still fits the plan.
+
+Campaign: ${ctx.title}
+Summary: ${ctx.summary}
+Goal: ${ctx.goal}
+City: ${ctx.city}
+Total budget: ₹${ctx.budget.toLocaleString("en-IN")}
+Audience: ${ctx.audience}
+
+Respond with ONLY valid JSON matching this shape (no markdown fences):
+${SECTION_SHAPES[section]}`;
+}
+
 export function buildCampaignUserMessage(input: CampaignInput): string {
   if (input.prompt && !input.goal) {
     return `A growth manager typed this into the workspace:\n\n"${input.prompt}"\n\nInfer the goal, city, budget, timeline, and audience from it, then produce the full campaign plan JSON. If the total budget is stated, the budgetSplit amounts must sum to it exactly.`;

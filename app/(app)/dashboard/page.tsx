@@ -11,6 +11,7 @@ import { Badge } from "@/components/ui/badge";
 import { useStore } from "@/hooks/use-store";
 import { getCampaigns, getCreatives, getHistory } from "@/lib/store";
 import { formatCurrencyINR, relativeTime } from "@/lib/utils";
+import { CountUp } from "@/components/count-up";
 
 const QUICK_ACTIONS = [
   { label: "New campaign", href: "/campaigns/new", icon: Megaphone, tint: "from-primary to-fuchsia-500" },
@@ -33,10 +34,10 @@ export default function DashboardPage() {
   const totalBudget = campaigns.reduce((s, c) => s + (c.budget || 0), 0);
 
   const stats = [
-    { label: "Active campaigns", value: campaigns.length, icon: Megaphone },
-    { label: "Creatives analysed", value: creatives.length, icon: Palette },
-    { label: "Planned budget", value: formatCurrencyINR(totalBudget), icon: Wallet },
-    { label: "AI actions", value: history.length, icon: Sparkles },
+    { label: "Active campaigns", node: <CountUp value={campaigns.length} />, icon: Megaphone },
+    { label: "Creatives analysed", node: <CountUp value={creatives.length} />, icon: Palette },
+    { label: "Planned budget", node: <CountUp value={totalBudget} format={formatCurrencyINR} />, icon: Wallet },
+    { label: "AI actions", node: <CountUp value={history.length} />, icon: Sparkles },
   ];
 
   return (
@@ -75,7 +76,7 @@ export default function DashboardPage() {
             <Card key={s.label} className="glass">
               <CardContent className="pt-6">
                 <div className="flex items-center justify-between">
-                  <span className="text-2xl font-bold">{s.value}</span>
+                  <span className="text-2xl font-bold">{s.node}</span>
                   <Icon className="size-5 text-primary" />
                 </div>
                 <div className="text-xs text-muted-foreground mt-1">{s.label}</div>

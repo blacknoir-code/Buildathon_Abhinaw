@@ -152,6 +152,110 @@ export function mockCampaign(input: CampaignInput): CampaignPlan {
   };
 }
 
+/**
+ * Regenerate a single plan section in demo mode. Returns a genuinely
+ * different variant each call (seeded by `seed`) so "Regenerate" feels
+ * alive without a key.
+ */
+export function mockSection(
+  section: string,
+  input: CampaignInput,
+  seed: number,
+): unknown {
+  const base = mockCampaign(input);
+  const { budget } = parsePrompt(input);
+  const pick = <T,>(arr: T[]) => arr[seed % arr.length];
+
+  switch (section) {
+    case "objectives":
+      return pick([
+        base.objectives,
+        [
+          "Hit the acquisition target 10% ahead of deadline",
+          "Drive a sub-₹250 blended CPA on qualified leads",
+          "Convert 40% of leads to onboarded within 72h",
+          "Capture a 20k+ warm WhatsApp audience for re-use",
+        ],
+        [
+          "Own the top 5 pincodes by share of qualified applicants",
+          "Keep CAC payback under one earning cycle",
+          "Localise 100% of creative into the city's language",
+          "Build a repeatable playbook for the next city launch",
+        ],
+      ]);
+    case "risks":
+      return pick([
+        base.risks,
+        [
+          { risk: "Lead quality drops as volume scales", severity: "high", mitigation: "Add a pre-qualification question to the lead form" },
+          { risk: "WhatsApp opt-in rates underperform", severity: "medium", mitigation: "A/B test the first message within 2h of capture" },
+          { risk: "Field activation costs overrun", severity: "medium", mitigation: "Cap field to the 3 highest-converting pincodes" },
+          { risk: "Competitor outbids on branded search", severity: "low", mitigation: "Shift budget to Reels + Shorts if CPCs spike" },
+        ],
+      ]);
+    case "nextSteps":
+      return pick([
+        base.nextSteps,
+        [
+          "Lock the creative brief and shoot 6 Reels variants",
+          "Wire the WhatsApp onboarding flow end-to-end",
+          "Set up geo-fenced campaigns for the top 5 pincodes",
+          "Agree the ops SLA for onboarding the target volume",
+          "Define the daily war-room dashboard + owners",
+        ],
+      ]);
+    case "kpis":
+      return pick([
+        base.kpis,
+        [
+          { metric: "Cost per onboarded", target: `< ${formatCurrencyINR(Math.round(budget / 3500))}`, why: "The metric that actually maps to spend efficiency" },
+          { metric: "Lead form completion", target: "> 55%", why: "Signals creative-to-form fit" },
+          { metric: "Day-1 activation", target: "> 30%", why: "Proves the funnel converts, not just captures" },
+          { metric: "WhatsApp reply rate", target: "> 45%", why: "Warm-pool health for re-marketing" },
+        ],
+      ]);
+    case "budgetSplit": {
+      const presets = [
+        base.budgetSplit,
+        [
+          { channel: "Meta (FB/Instagram)", percent: 30 },
+          { channel: "Google (Search + YouTube)", percent: 28 },
+          { channel: "WhatsApp + SMS", percent: 18 },
+          { channel: "Field / OOH", percent: 14 },
+          { channel: "Creative + Contingency", percent: 10 },
+        ].map((s) => ({
+          ...s,
+          amount: Math.round((budget * s.percent) / 100),
+          rationale: "Rebalanced toward high-intent search this round",
+        })),
+      ];
+      return presets[seed % presets.length];
+    }
+    case "personas":
+      return pick([
+        base.personas,
+        [
+          { name: "Imran, the part-timer", age: "22-28", motivation: "Wants evening/weekend income alongside studies", channels: ["Instagram", "YouTube Shorts", "WhatsApp"], objection: "\"Can I really choose my own hours?\"" },
+          { name: "Lakshmi, the returner", age: "26-34", motivation: "Re-entering the workforce, needs flexibility", channels: ["Facebook", "Local field agents", "SMS"], objection: "\"Is onboarding quick and supportive?\"" },
+        ],
+      ]);
+    case "channels":
+      return pick([
+        base.channels,
+        [
+          { channel: "Meta", strategy: "Creator-style UGC Reels + Advantage+ campaigns, instant WhatsApp lead handoff." },
+          { channel: "Google", strategy: "Broad match with smart bidding on earning-intent terms + YouTube Shorts retargeting." },
+          { channel: "WhatsApp", strategy: "2-step verification nudge with a human fallback for stuck leads." },
+          { channel: "Field / OOH", strategy: "Micro-events at transit hubs during peak commute windows." },
+        ],
+      ]);
+    case "timeline":
+      return base.timeline;
+    default:
+      return (base as unknown as Record<string, unknown>)[section];
+  }
+}
+
 export function mockCreative(name = "poster"): CreativeAnalysis {
   return {
     overall: 68,

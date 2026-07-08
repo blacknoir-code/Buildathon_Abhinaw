@@ -70,6 +70,31 @@ export async function runAgent(opts: RunOptions): Promise<string> {
     .trim();
 }
 
+/**
+ * Streaming multi-turn chat for the Copilot. Yields text deltas as
+ * Claude produces them. Throws on any API error (caller falls back).
+ */
+export async function* streamChat(
+  system: string,
+  messages: { role: "user" | "assistant"; content: string }[],
+): AsyncGenerator<string> {
+  const stream = getClient().messages.stream({
+    model: MODEL,
+    max_tokens: 1500,
+    temperature: 0.8,
+    system,
+    messages: messages.map((m) => ({ role: m.role, content: m.content })),
+  });
+  for await (const event of stream) {
+    if (
+      event.type === "content_block_delta" &&
+      event.delta.type === "text_delta"
+    ) {
+      yield event.delta.text;
+    }
+  }
+}
+
 /** Multi-turn chat helper for the Copilot. */
 export async function runChat(
   system: string,

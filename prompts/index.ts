@@ -1,7 +1,12 @@
 // Central registry of the specialised AI agents that make up the
 // GrowthPilot AI orchestrator. Each agent is a system prompt plus
 // (optionally) helpers to build its user message.
-export { CAMPAIGN_AGENT, buildCampaignUserMessage } from "./campaign";
+export {
+  CAMPAIGN_AGENT,
+  buildCampaignUserMessage,
+  buildSectionUserMessage,
+  SECTION_SHAPES,
+} from "./campaign";
 export { CREATIVE_AGENT, CREATIVE_USER_TEXT } from "./creative";
 export { CONTENT_AGENT, buildContentUserMessage } from "./content";
 export { CHAT_AGENT, buildChatSystem } from "./chat";

@@ -2,7 +2,7 @@
 
 import Link from "next/link";
 import { useTheme } from "next-themes";
-import { Moon, Sun, Plus, Sparkles } from "lucide-react";
+import { Moon, Sun, Plus, Sparkles, Search } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { ModeBadge } from "@/components/layout/mode-badge";
 
@@ -23,6 +23,14 @@ export function Topbar({
       </div>
 
       <div className="flex items-center gap-2">
+        <button
+          onClick={() => window.dispatchEvent(new Event("gp:open-palette"))}
+          className="hidden md:flex items-center gap-2 h-9 rounded-lg border border-border bg-background/40 px-3 text-xs text-muted-foreground hover:text-foreground hover:border-primary/40 transition-colors"
+        >
+          <Search className="size-3.5" />
+          <span>Search…</span>
+          <kbd className="ml-4 text-[10px] border border-border rounded px-1.5 py-0.5">⌘K</kbd>
+        </button>
         <Button asChild size="sm" variant="gradient" className="hidden sm:inline-flex">
           <Link href="/campaigns/new">
             <Plus className="size-4" /> New campaign

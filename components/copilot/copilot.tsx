@@ -53,36 +53,36 @@ export function Copilot({
       createdAt: new Date().toISOString(),
     };
     const next = [...messages, userMsg];
-    setMessages(next);
+    const replyId = nanoId("m_");
+    setMessages([
+      ...next,
+      { id: replyId, role: "assistant", content: "", createdAt: new Date().toISOString() },
+    ]);
     setInput("");
     setLoading(true);
     try {
-      const { data } = await api.chat({
-        messages: next
-          .filter((m) => m.id !== "welcome")
-          .map((m) => ({ role: m.role, content: m.content })),
-        campaignContext,
-      });
-      setMessages((prev) => [
-        ...prev,
+      const { text } = await api.chatStream(
         {
-          id: nanoId("m_"),
-          role: "assistant",
-          content: data,
-          createdAt: new Date().toISOString(),
+          messages: next
+            .filter((m) => m.id !== "welcome")
+            .map((m) => ({ role: m.role, content: m.content })),
+          campaignContext,
         },
-      ]);
-      addHistory({ action: "Copilot chat", prompt: content, response: data.slice(0, 120) });
+        (_chunk, full) => {
+          setMessages((prev) =>
+            prev.map((m) => (m.id === replyId ? { ...m, content: full } : m)),
+          );
+        },
+      );
+      addHistory({ action: "Copilot chat", prompt: content, response: text.slice(0, 120) });
     } catch {
-      setMessages((prev) => [
-        ...prev,
-        {
-          id: nanoId("m_"),
-          role: "assistant",
-          content: "Something went wrong reaching the Copilot. Please try again.",
-          createdAt: new Date().toISOString(),
-        },
-      ]);
+      setMessages((prev) =>
+        prev.map((m) =>
+          m.id === replyId
+            ? { ...m, content: "Something went wrong reaching the Copilot. Please try again." }
+            : m,
+        ),
+      );
     } finally {
       setLoading(false);
     }
@@ -113,7 +113,8 @@ export function Copilot({
       </div>
 
       <div ref={scrollRef} className="flex-1 overflow-y-auto scrollbar-thin p-4 space-y-4">
-        {messages.map((m) => (
+        {messages.map((m) =>
+          m.role === "assistant" && m.content === "" ? null : (
           <div
             key={m.id}
             className={cn(
@@ -130,7 +131,7 @@ export function Copilot({
             )}
           </div>
         ))}
-        {loading && (
+        {loading && messages[messages.length - 1]?.content === "" && (
           <div className="flex items-center gap-2 text-sm text-muted-foreground">
             <Loader2 className="size-4 animate-spin" /> Thinking…
           </div>
