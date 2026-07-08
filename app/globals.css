@@ -1,0 +1,121 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  :root {
+    --background: 0 0% 100%;
+    --foreground: 240 10% 3.9%;
+    --card: 0 0% 100%;
+    --card-foreground: 240 10% 3.9%;
+    --popover: 0 0% 100%;
+    --popover-foreground: 240 10% 3.9%;
+    --primary: 262 83% 58%;
+    --primary-foreground: 0 0% 98%;
+    --secondary: 240 4.8% 95.9%;
+    --secondary-foreground: 240 5.9% 10%;
+    --muted: 240 4.8% 95.9%;
+    --muted-foreground: 240 3.8% 46.1%;
+    --accent: 240 4.8% 95.9%;
+    --accent-foreground: 240 5.9% 10%;
+    --destructive: 0 84.2% 60.2%;
+    --destructive-foreground: 0 0% 98%;
+    --border: 240 5.9% 90%;
+    --input: 240 5.9% 90%;
+    --ring: 262 83% 58%;
+    --radius: 0.75rem;
+  }
+
+  .dark {
+    --background: 240 10% 5%;
+    --foreground: 0 0% 95%;
+    --card: 240 8% 8%;
+    --card-foreground: 0 0% 95%;
+    --popover: 240 10% 6%;
+    --popover-foreground: 0 0% 95%;
+    --primary: 263 90% 66%;
+    --primary-foreground: 0 0% 100%;
+    --secondary: 240 5% 13%;
+    --secondary-foreground: 0 0% 95%;
+    --muted: 240 5% 13%;
+    --muted-foreground: 240 5% 60%;
+    --accent: 240 5% 15%;
+    --accent-foreground: 0 0% 98%;
+    --destructive: 0 72% 51%;
+    --destructive-foreground: 0 0% 98%;
+    --border: 240 5% 15%;
+    --input: 240 5% 16%;
+    --ring: 263 90% 66%;
+  }
+}
+
+@layer base {
+  * {
+    @apply border-border;
+  }
+  body {
+    @apply bg-background text-foreground antialiased;
+    font-feature-settings: "rlig" 1, "calt" 1;
+  }
+}
+
+@layer utilities {
+  /* Glass surface used across cards and the sidebar */
+  .glass {
+    @apply bg-card/60 backdrop-blur-xl border border-white/5;
+  }
+  .glass-strong {
+    @apply bg-card/80 backdrop-blur-2xl border border-white/10;
+  }
+
+  /* Ambient product-grade gradient background */
+  .aurora {
+    background-image:
+      radial-gradient(60rem 60rem at 10% -10%, hsl(263 90% 66% / 0.12), transparent 55%),
+      radial-gradient(50rem 50rem at 100% 0%, hsl(190 90% 55% / 0.08), transparent 50%),
+      radial-gradient(40rem 40rem at 50% 120%, hsl(320 90% 60% / 0.08), transparent 55%);
+  }
+
+  .text-gradient {
+    @apply bg-gradient-to-r from-primary via-fuchsia-400 to-cyan-400 bg-clip-text text-transparent;
+  }
+
+  .scrollbar-thin {
+    scrollbar-width: thin;
+    scrollbar-color: hsl(var(--border)) transparent;
+  }
+  .scrollbar-thin::-webkit-scrollbar {
+    width: 8px;
+    height: 8px;
+  }
+  .scrollbar-thin::-webkit-scrollbar-thumb {
+    background-color: hsl(var(--border));
+    border-radius: 9999px;
+  }
+
+  .animate-in {
+    animation: fade-in 0.3s ease-out;
+  }
+}
+
+/* Print: isolate the campaign plan for clean "Save as PDF" output. */
+@media print {
+  body {
+    background: #fff !important;
+    color: #111 !important;
+  }
+  aside,
+  header,
+  .print\:hidden {
+    display: none !important;
+  }
+  main {
+    overflow: visible !important;
+  }
+  .glass,
+  .glass-strong {
+    backdrop-filter: none !important;
+    background: #fff !important;
+    border-color: #e5e5e5 !important;
+  }
+}
